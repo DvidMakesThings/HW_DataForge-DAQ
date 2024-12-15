@@ -2,10 +2,11 @@
 
 ## Functional Requirements
 
-### Analog Input Subsystem
+###Analog Input Subsystem
 - Acquire data from at least 16 channels simultaneously.
 - Provide a resolution of at least 16 bits.
-- Set the absolute maximum input voltage to 5.5V for safety.
+- Handle input voltages up to ±40V with protection and scaling.
+
 
 ### Analog Output Subsystem
 - Generate signals on at least 8 channels simultaneously.

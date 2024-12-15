@@ -13,7 +13,7 @@ DataForge is a versatile, professional-grade Data Acquisition (DAQ) system desig
 
 ## High-Level Features
 
-- **Analog Input**: 16+ channels with high resolution (16/24-bit ADC).
+- **Analog Input**: 16+ channels with high resolution (24-bit ADC).
 - **Analog Output**: 8+ channels with precision DAC.
 - **Digital I/O**: 32 configurable channels for flexible interfacing.
 - **Serial Interfaces**: 2 UART ports.
@@ -38,44 +38,42 @@ The system comprises the following blocks:
 
 ### 1. Core Microcontroller
 
-- **Type**: STM32H743 or STM32H750 (ARM Cortex-M7).
-- **Features**: Integrated 12-bit ADC, SPI/QSPI controllers, UART, CAN-FD support, and DMA for efficient data handling.
-- **Clock Speed**: 480 MHz maximum.
-- **Memory**: 1 MB Flash, 512 KB RAM for data buffering and program execution.
+- **Type**: RP2354B (Dual Cortex-M33 or Hazard3 RISC-V processors at 150 MHz).
+- **Features**: Integrated 8-channel ADC, SPI/QSPI controllers, UART, and PWM for flexible control.
+- **Clock Speed**: 150 MHz.
 - **Operating Voltage**: 3.3V.
 
 ### 2. Analog Input Subsystem
 
 - **Channels**: 16 differential or 32 single-ended inputs.
-- **Resolution**: 24-bit ADC (ADS1256).
-- **Sampling Rate**: Up to 30 kSps per channel.
-- **Input Voltage Range**: Configurable up to ±5V using AD8253 programmable gain amplifiers.
-- **Absolute Maximum Input Voltage**: 5.5V for safety.
-- **Multiplexer**: 74HC4067 for channel selection.
+- **Resolution**: 24-bit ADC.
+- **Programmable Gain**: Configurable for scalable input ranges using external programmable gain amplifier.
+- **Input Selection**: Managed via external analog multiplexer.
+- **Input Voltage Range**: Up to ±40V with programmable gain adjustment.
+- **Input Protection**: Designed to limit input voltage spikes and noise for safety.
 
 ### 3. Analog Output Subsystem
 
 - **Channels**: 8 single-ended outputs.
 - **Resolution**: 16-bit DAC (DAC8568).
 - **Output Voltage Range**: Configurable from 0-5V.
-- **Output Current**: Up to 10 mA per channel.
-- **Stability**: Buffered outputs using operational amplifiers (e.g., TLV2372).
+- **Output Buffering**: Operational amplifiers (TLV2372) for stable and accurate outputs.
 
 ### 4. Digital I/O Subsystem
 
 - **Voltage Levels**: Selectable 3.3V or 5V logic.
-- **Expansion**: MCP23S17 GPIO expanders connected via SPI.
-- **Protection**: ESD and overcurrent protection on all lines.
+- **Translator**: LSF0108-Q1 for bidirectional voltage-level shifting.
+- **Protection**: Ensures safe interfacing for external connections.
 
 ### 5. Communication Subsystem
 
-- **Serial Interfaces**: 2 UART ports (RS-232 with MAX3232, RS-485 with MAX485).
-- **CAN Interface**: Supports CAN-FD using TJA1051 transceiver with integrated termination.
-- **SPI/QSPI Interfaces**: SPI with up to 40 MHz clock, QSPI for external Flash storage and high-speed peripherals.
-- **Unified Connectors**: Two 25-pin DB-25 connectors to integrate all communication channels into a simplified interface.
-- **PC Communication Interfaces**:
-  - USB-B for direct PC connectivity.
-  - Ethernet (via W5500 Ethernet module) for networked communication and remote operation.
+- **Serial Interfaces**:
+  - 2 UART ports (RS-232 using MAX3232, RS-485 using MAX485).
+- **CAN Interface**: SPI-based CAN controller (MCP2515) with TJA1051 transceiver.
+- **USB**: Integrated USB 1.1 host/device controller for PC connectivity.
+- **Ethernet**: RTL8211F Gigabit Ethernet PHY connected via RMII interface, requiring 25 MHz clock input.
+
+
 
 ### Pin-Level Details for DB-37 Connectors
 
