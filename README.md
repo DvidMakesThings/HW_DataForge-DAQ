@@ -85,7 +85,7 @@ High-Level Design for the DAQ System
     - Modular design to allow optional features (e.g., CAN or SPI add-on boards).
     - Simplified PCB layout with 2-4 layers to minimize manufacturing costs.
 
-## Reference Voltages
+## Analog Input Characteristic
 
 - **DG409**:
   - V+ = +12V
@@ -95,29 +95,55 @@ High-Level Design for the DAQ System
   - VDDL = -12V
   - DVDD = 3.3V
   - AVDD = 2.5V
-- **ADS1256**:
-  - VREFP = 2.5V
-  - VREFN = GND
+- **ADS9234R**:
+  - AVDD = 3.3V
+  - DVDD = 3.3V
+  ## Bandwidth Calculation for Signal Chain: AIN-DG409-ADA4254-ADS9234R
 
-## Input Range Table
+  ### Constants
+  - **ADC Sampling Rate**: 3.5 MSPS (Maximum sampling rate of ADS9234R)
+  - **ADC Nyquist Limit**: 1.75 MHz (Nyquist bandwidth for ADC)
+  - **PGA Bandwidth**: 10 MHz (Maximum bandwidth of ADA4254 at Gain = 1)
+  - **DG409 Transition Time**: 160 ns (Transition time for DG409)
+  - **ADA4254 Transition Time**: 200 ns (Transition time for ADA4254)
+
+  ### Bandwidth for Each Gain Setting
+  - **Gain = 1/16**: Bandwidth = 1.75 MHz (Capped by ADC)
+  - **Gain = 1/8**: Bandwidth = 1.75 MHz (Capped by ADC)
+  - **Gain = 1/4**: Bandwidth = 1.75 MHz (Capped by ADC)
+  - **Gain = 1/2**: Bandwidth = 1.75 MHz (Capped by ADC)
+  - **Gain = 1**: Bandwidth = 1.75 MHz (Capped by ADC)
+  - **Gain = 2**: Bandwidth = 1.75 MHz (Capped by ADC)
+  - **Gain = 4**: Bandwidth = 1.75 MHz (Capped by ADC)
+  - **Gain = 8**: Bandwidth = 1.25 MHz (PGA Limited)
+  - **Gain = 16**: Bandwidth = 625 kHz (PGA Limited)
+  - **Gain = 32**: Bandwidth = 312.5 kHz (PGA Limited)
+  - **Gain = 64**: Bandwidth = 156.25 kHz (PGA Limited)
+  - **Gain = 128**: Bandwidth = 78.125 kHz (PGA Limited)
+
+  ### Notes
+  - For Gains ≤ 1, bandwidth is capped by ADC's Nyquist limit (1.75 MHz).
+  - For Gains > 1, bandwidth is limited by the PGA's frequency response.
+  - Transition delays (DG409 + ADA4254) are factored into the calculation.
 
 For **VREF = 2.5V**, **V+ = +12V**, and **V- = -12V**:
 
-| **Gain** | **Differential Input Range** (±V) | **Positive Input Range** (0 to V) | **Negative Input Range** (0 to -V) |
-|----------|--------------------------------------|-----------------------------------|------------------------------------|
-| 1/16     | ±40.0 V                             | 0 to 40.0 V                       | 0 to -40.0 V                       |
-| 1/8      | ±20.0 V                             | 0 to 20.0 V                       | 0 to -20.0 V                       |
-| 1/4      | ±10.0 V                             | 0 to 10.0 V                       | 0 to -10.0 V                       |
-| 1/2      | ±5.0 V                              | 0 to 5.0 V                        | 0 to -5.0 V                        |
-| 1        | ±2.5 V                              | 0 to 2.5 V                        | 0 to -2.5 V                        |
-| 2        | ±1.25 V                            | 0 to 1.25 V                       | 0 to -1.25 V                       |
-| 4        | ±0.625 V                           | 0 to 0.625 V                      | 0 to -0.625 V                      |
-| 8        | ±0.3125 V                          | 0 to 0.3125 V                     | 0 to -0.3125 V                     |
-| 16       | ±0.15625 V                         | 0 to 0.15625 V                    | 0 to -0.15625 V                    |
-| 32       | ±0.078125 V                        | 0 to 0.078125 V                   | 0 to -0.078125 V                   |
-| 64       | ±0.0390625 V                       | 0 to 0.0390625 V                  | 0 to -0.0390625 V                  |
-| 128      | ±0.01953125 V                      | 0 to 0.01953125 V                 | 0 to -0.01953125 V                 |
-
+```
+| Gain | Differential Input Range (±V) | Positive Input Range (0 to V) | Negative Input Range (0 to -V) | Max Bandwidth (Hz) |
+|------|-------------------------------|-------------------------------|-------------------------------|--------------------|
+| 1/16 | ±80.0                         | 0 to 40.0                     | 0 to -40.0                     | 1,750,000          |
+| 1/8  | ±40.0                         | 0 to 20.0                     | 0 to -20.0                     | 1,750,000          |
+| 1/4  | ±20.0                         | 0 to 10.0                     | 0 to -10.0                     | 1,750,000          |
+| 1/2  | ±10.0                         | 0 to 5.0                      | 0 to -5.0                      | 1,750,000          |
+| 1    | ±5.0                          | 0 to 2.5                      | 0 to -2.5                      | 1,750,000          |
+| 2    | ±2.5                          | 0 to 1.25                     | 0 to -1.25                     | 1,750,000          |
+| 4    | ±1.25                         | 0 to 0.625                    | 0 to -0.625                    | 1,750,000          |
+| 8    | ±0.625                        | 0 to 0.3125                   | 0 to -0.3125                   | 1,250,000          |
+| 16   | ±0.3125                       | 0 to 0.15625                  | 0 to -0.15625                  | 625,000            |
+| 32   | ±0.15625                      | 0 to 0.078125                 | 0 to -0.078125                 | 312,500            |
+| 64   | ±0.078125                     | 0 to 0.0390625                | 0 to -0.0390625                | 156,250            |
+| 128  | ±0.0390625                    | 0 to 0.01953125               | 0 to -0.01953125               | 78,125             |
+```
 
 ## License
 This project is licensed under the GPLv3 License.
